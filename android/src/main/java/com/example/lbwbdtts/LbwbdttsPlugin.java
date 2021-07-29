@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Handler;
 import android.os.Looper;
@@ -30,11 +31,14 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
+import io.flutter.embedding.engine.plugins.activity.ActivityAware;
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
+import io.flutter.plugin.common.PluginRegistry;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 /** LbwbdttsPlugin */
-public class LbwbdttsPlugin implements FlutterPlugin, MethodCallHandler {
+public class LbwbdttsPlugin implements FlutterPlugin, MethodCallHandler,ActivityAware,PluginRegistry.ActivityResultListener {
   /// The MethodChannel that will the communication between Flutter and native Android
   ///
   /// This local reference serves to register the plugin with the Flutter Engine and unregister it
@@ -42,28 +46,25 @@ public class LbwbdttsPlugin implements FlutterPlugin, MethodCallHandler {
   private MethodChannel channel;
   private Context context;
   protected SpeechSynthesizer mSpeechSynthesizer;
-  protected BaiduConfig config;
+  protected BaiduConfigtts config;
   protected Application application;
   protected MessageListener messageListener;
-
+  private static Activity activity;
   public static String ename;
 
-  public void playTTsEnd(String eventname){
+  public void playTTsEnd(String eventname, final int data){
     ename = eventname;
     new Handler(Looper.getMainLooper()).post(new Runnable() {
       @Override
       public void run() {
         try {
-          channel.invokeMethod(ename, "1");
+          channel.invokeMethod(ename, String.valueOf(data));
         }
         catch (Exception e){
           Log.d("TAG11111111", e.toString());
         }
       }
     });
-    
-
-
   }
 
   @Override
@@ -72,7 +73,7 @@ public class LbwbdttsPlugin implements FlutterPlugin, MethodCallHandler {
     channel.setMethodCallHandler(this);
     application = ((Application) flutterPluginBinding.getApplicationContext());
     context = application.getApplicationContext();
-    config = BaiduConfig.getInstance();
+    config = BaiduConfigtts.getInstance();
     //initPermission();
   }
   //此处是旧的插件加载注册方式
@@ -84,7 +85,7 @@ public class LbwbdttsPlugin implements FlutterPlugin, MethodCallHandler {
     channel = methodChannel;
     context = registrar.context();
     application = ((Application)context.getApplicationContext());
-    config = BaiduConfig.getInstance();
+    config = BaiduConfigtts.getInstance();
     //channel.setMethodCallHandler(this);
     //initPermission();
     return this;
@@ -126,7 +127,8 @@ public class LbwbdttsPlugin implements FlutterPlugin, MethodCallHandler {
     }
   }
   void initSDK(Map<String, String> params){
-    config = BaiduConfig.getInstance();
+    initPermission();
+    config = BaiduConfigtts.getInstance();
     config.SetAppId(params.get("appid"));
     config.SetAppKey(params.get("appkey"));
     config.SetSecretKey(params.get("secretkey"));
@@ -137,12 +139,16 @@ public class LbwbdttsPlugin implements FlutterPlugin, MethodCallHandler {
 
     messageListener = new MessageListener(this);
     mSpeechSynthesizer.setSpeechSynthesizerListener(messageListener);
+
+   // mSpeechSynthesizer.loadModel("",  "");
+
     speaker("4");
-    int result = mSpeechSynthesizer.initTts(TtsMode.ONLINE);
+    int result = mSpeechSynthesizer.initTts(TtsMode.MIX);
     if (result != 0) {
       //Log.d("LBWBDTTS", "引擎初始化失败");
     }else{
       Log.d("LBWBDTTS", "引擎初始化成功");
+     
     }
   }
   protected Map<String, String> getParams() {
@@ -203,5 +209,60 @@ public class LbwbdttsPlugin implements FlutterPlugin, MethodCallHandler {
    */
   private void stop() {
     mSpeechSynthesizer.stop();
+  }
+
+
+
+  private void initPermission() {
+    String permissions[] = {
+            Manifest.permission.INTERNET,
+            Manifest.permission.ACCESS_NETWORK_STATE,
+            Manifest.permission.MODIFY_AUDIO_SETTINGS,
+            Manifest.permission.ACCESS_WIFI_STATE,
+            Manifest.permission.CHANGE_WIFI_STATE
+    };
+
+    ArrayList<String> toApplyList = new ArrayList<String>();
+
+    for (String perm : permissions) {
+      if (PackageManager.PERMISSION_GRANTED != ContextCompat.checkSelfPermission(this.context, perm)) {
+        toApplyList.add(perm);
+        //进入到这里代表没有权限.
+      }
+    }
+    String tmpList[] = new String[toApplyList.size()];
+    if (!toApplyList.isEmpty()) {
+      ActivityCompat.requestPermissions(activity, toApplyList.toArray(tmpList), 123);
+    }
+
+  }
+  @Override
+  public boolean onActivityResult(int requestCode, int resultCode, Intent data) {
+    Log.i("BaiduFacePlugin",
+            "onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode + ", data=" + data);
+    return false;
+  }
+
+  ///activity 生命周期
+  @Override
+  public void onAttachedToActivity(ActivityPluginBinding activityPluginBinding) {
+    Log.e("onAttachedToActivity", "onAttachedToActivity");
+    this.activity = activityPluginBinding.getActivity();
+  }
+
+  @Override
+  public void onDetachedFromActivityForConfigChanges() {
+    //Log.e("onDetachedFromActivityForConfigChanges", "onDetachedFromActivityForConfigChanges");
+    //EventBus.getDefault().unregister(this);
+  }
+
+  @Override
+  public void onReattachedToActivityForConfigChanges(ActivityPluginBinding activityPluginBinding) {
+    //Log.e("onReattachedToActivityForConfigChanges", "onReattachedToActivityForConfigChanges");
+  }
+
+  @Override
+  public void onDetachedFromActivity() {
+    //Log.e("onDetachedFromActivity", "onDetachedFromActivity");
   }
 }

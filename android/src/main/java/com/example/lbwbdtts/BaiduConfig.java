@@ -1,6 +1,6 @@
 package com.example.lbwbdtts;
 
-public class BaiduConfig
+public class BaiduConfigtts
 {
 
     private String appId;
@@ -11,13 +11,13 @@ public class BaiduConfig
 
     private String Speaker;//语音模式
 
-    private static volatile BaiduConfig singleton;
-    private BaiduConfig() {}
-    public static BaiduConfig getInstance() {
+    private static volatile BaiduConfigtts singleton;
+    private BaiduConfigtts() {}
+    public static BaiduConfigtts getInstance() {
         if (singleton == null) {
-            synchronized (BaiduConfig.class) {
+            synchronized (BaiduConfigtts.class) {
                 if (singleton == null) {
-                    singleton = new BaiduConfig();
+                    singleton = new BaiduConfigtts();
                 }
             }
         }

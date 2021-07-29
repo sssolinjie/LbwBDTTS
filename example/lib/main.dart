@@ -15,9 +15,9 @@ import 'package:lbwbdtts/lbwbdtts.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   Lbwbdtts.initSDK(
-      appid: "23174501",
-      appkey: "HQg507YYm55jQ7o7bFjh3sEf",
-      secretkey: "8dPMtSjHPqI5nwbDuIbxb8PhTPOL8XYa");
+      appid: "24230858",
+      appkey: "OyBZwoyRfGwdX4sGuV0l3G5L",
+      secretkey: "kp3b34iGfgxPuDLXwU6EVVr3hwmRgz8E");
   runApp(MyApp());
 }
 
@@ -32,6 +32,10 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+    Lbwbdtts.addListen((a, v) {
+      print(a);
+      print(v);
+    });
     initPlatformState();
   }
 
@@ -66,15 +70,44 @@ class _MyAppState extends State<MyApp> {
           child: Column(children: [
             FlatButton(
                 onPressed: () {
+                  ////设置合成音频0普通女生 1普通男声 2特别男声 3情感男声 4 情感儿童声
                   Lbwbdtts.setSpeaker("0");
                   Lbwbdtts.speak("御剑乘风来,除魔天地间,有酒乐逍遥,无酒我亦癫");
                 },
-                child: Text("Play text")),
+                child: Text("普通女生")),
+            FlatButton(
+                onPressed: () {
+                  ////设置合成音频0普通女生 1普通男声 2特别男声 3情感男声 4 情感儿童声
+                  Lbwbdtts.setSpeaker("1");
+                  Lbwbdtts.speak("御剑乘风来,除魔天地间,有酒乐逍遥,无酒我亦癫");
+                },
+                child: Text("普通男声")),
+            FlatButton(
+                onPressed: () {
+                  ////设置合成音频0普通女生 1普通男声 2特别男声 3情感男声 4 情感儿童声
+                  Lbwbdtts.setSpeaker("2");
+                  Lbwbdtts.speak("御剑乘风来,除魔天地间,有酒乐逍遥,无酒我亦癫");
+                },
+                child: Text("2特别男声")),
+            FlatButton(
+                onPressed: () {
+                  ////设置合成音频0普通女生 1普通男声 2特别男声 3情感男声 4 情感儿童声
+                  Lbwbdtts.setSpeaker("3");
+                  Lbwbdtts.speak("御剑乘风来,除魔天地间,有酒乐逍遥,无酒我亦癫");
+                },
+                child: Text("3情感男声")),
+            FlatButton(
+                onPressed: () {
+                  ////设置合成音频0普通女生 1普通男声 2特别男声 3情感男声 4 情感儿童声
+                  Lbwbdtts.setSpeaker("4");
+                  Lbwbdtts.speak("御剑乘风来,除魔天地间,有酒乐逍遥,无酒我亦癫");
+                },
+                child: Text("情感儿童声")),
             FlatButton(
                 onPressed: () {
                   Lbwbdtts.speak("我是小明");
                 },
-                child: Text("Play text 2")),
+                child: Text("我是小明")),
             FlatButton(
                 onPressed: () {
                   Lbwbdtts.pause();
