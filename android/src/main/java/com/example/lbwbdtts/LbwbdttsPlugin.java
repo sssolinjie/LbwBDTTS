@@ -121,7 +121,7 @@ public class LbwbdttsPlugin implements FlutterPlugin, MethodCallHandler,Activity
     else if (call.method.equals("stop")) {
       stop();
     }else if(call.method.equals("testBtn")){
-      playTTsEnd("tarnish");
+      //playTTsEnd("tarnish");
     }else {
       result.notImplemented();
     }
