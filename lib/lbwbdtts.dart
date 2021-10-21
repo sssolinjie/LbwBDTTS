@@ -18,6 +18,7 @@ class Lbwbdtts {
 
   static const MethodChannel _channel = const MethodChannel('lbwbdtts');
   static List<Function> callbackList = [];
+  static Function callbackchild = null;
   static Future<String> get platformVersion async {
     final String version = await _channel.invokeMethod('getPlatformVersion');
     return version;
@@ -43,6 +44,12 @@ class Lbwbdtts {
     await _channel.invokeMethod("speak", message);
   }
 
+  //批量合成并播放-- 分多次调用叭
+  static Future<void> speakList(String message, String messageid) async {
+    Map<String, Object> map = {"message": message, "messageid": messageid};
+    await _channel.invokeMethod("speaklist", map);
+  }
+
   //暂停
   static Future<void> pause() async {
     await _channel.invokeMethod("pause");
@@ -60,11 +67,15 @@ class Lbwbdtts {
 
   //监听tts播放结果
   static void addListen(Function callback) {
-    callbackList.add(callback);
+    // callbackList.add(callback);
+    // _channel.setMethodCallHandler((call) {
+    //   for (int i = 0; i < callbackList.length; ++i) {
+    //     callbackList[i](call.method, call.arguments);
+    //   }
+    // });
+    callbackchild = callback;
     _channel.setMethodCallHandler((call) {
-      for (int i = 0; i < callbackList.length; ++i) {
-        callbackList[i](call.method, call.arguments);
-      }
+      callbackchild(call.method, call.arguments);
     });
   }
 

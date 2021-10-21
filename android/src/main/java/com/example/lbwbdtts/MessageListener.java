@@ -21,8 +21,8 @@ public class MessageListener implements SpeechSynthesizerListener{
         this.channel = listener;
     }
 
-    public void dart(String state , int num){
-        channel.playTTsEnd(state, num);
+    public void dart(String state , String id){
+        channel.playTTsEnd(state, id);
     }
     /**
      * 播放开始，每句播放开始都会回调
@@ -78,10 +78,10 @@ public class MessageListener implements SpeechSynthesizerListener{
     @Override
     public void onSpeechProgressChanged(String utteranceId, int progress) {
         //  Log.i(TAG, "播放进度回调, progress：" + progress + ";序列号:" + utteranceId );
-        try {
-            dart("ing", progress);
-        } catch (ArrayIndexOutOfBoundsException e) {
-        }
+       try {
+           dart("ing", String.valueOf(progress));
+       } catch (ArrayIndexOutOfBoundsException e) {
+       }
     }
 
     /**
@@ -93,7 +93,7 @@ public class MessageListener implements SpeechSynthesizerListener{
     public void onSpeechFinish(String utteranceId) {
 
         try {
-            dart("tarnish", 0);
+            dart("tarnish", utteranceId);
         } catch (ArrayIndexOutOfBoundsException e) {
         }
         //sendMessage("播放结束回调, 序列号:" + utteranceId);
@@ -108,7 +108,7 @@ public class MessageListener implements SpeechSynthesizerListener{
     @Override
     public void onError(String utteranceId, SpeechError speechError) {
         try {
-            dart("terror", -1);
+            dart("terror", utteranceId);
             Log.d("错误发生：", speechError.description);
             Log.d("，错误编码：", String.valueOf(speechError.code));
         } catch (ArrayIndexOutOfBoundsException e) {

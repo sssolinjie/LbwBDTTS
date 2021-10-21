@@ -52,13 +52,13 @@ public class LbwbdttsPlugin implements FlutterPlugin, MethodCallHandler,Activity
   private static Activity activity;
   public static String ename;
 
-  public void playTTsEnd(String eventname, final int data){
+  public void playTTsEnd(String eventname, final String data){
     ename = eventname;
     new Handler(Looper.getMainLooper()).post(new Runnable() {
       @Override
       public void run() {
         try {
-          channel.invokeMethod(ename, String.valueOf(data));
+          channel.invokeMethod(ename, data);
         }
         catch (Exception e){
           Log.d("TAG11111111", e.toString());
@@ -111,6 +111,12 @@ public class LbwbdttsPlugin implements FlutterPlugin, MethodCallHandler,Activity
     else if (call.method.equals("speak")) {
       String message = call.arguments();
       speak(message);
+    }
+    else if (call.method.equals("speaklist")) {
+      Map<String, String> params = call.arguments();
+      String message = params.get("message");
+      String messageid = params.get("messageid");
+      speakList(message,messageid);
     }
     else if (call.method.equals("pause")) {
       pause();
@@ -179,15 +185,23 @@ public class LbwbdttsPlugin implements FlutterPlugin, MethodCallHandler,Activity
     config.SetSpeaker(msg);
     setParams();
   }
-  void speak(String text){
+  void speakList(String text,String message){
     setParams();
-    int r = mSpeechSynthesizer.speak(text);
+    int r = mSpeechSynthesizer.speak(text, message);
     if (r != 0) {
      // Log.d("LBWBDTTS", "合成语音失败");
     }else{
       //Log.d("LBWBDTTS", "合成语音成功");
     }
-
+  }
+  void speak(String text){
+    setParams();
+    int r = mSpeechSynthesizer.speak(text);
+    if (r != 0) {
+      // Log.d("LBWBDTTS", "合成语音失败");
+    }else{
+      //Log.d("LBWBDTTS", "合成语音成功");
+    }
   }
 
   /**
